@@ -1,0 +1,35 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.col-left,
+.col-right {
+  width: 1px;
+  background-color: rgb(255, 0, 166);
+  height: 100vh;
+  left: 33%;
+}
+
+.col-right {
+  left: 66%;
+}
+
+.row-bottom,
+.row-top {
+  height: 1px;
+  background-color: rgb(255, 0, 166);
+  width: 100vw;
+  top: 33%;
+}
+
+.row-bottom {
+  top: 66%;
+}
+
+.big-grid,
+.big-grid div {
+  position: fixed;
+  z-index: 9999;
+}
