@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "DevGrid",
+  "version": "0.0.1",
+  "action": {...},
+  "default_locale": "en",
+  "description": "A grid overlay to assist web design",
+  "icons": {
+	"128": "icon128.png"
+	},
+  "author": "Deeter Cesler",
+  "content_scripts": [{
+    "css":"style.css",
+    "js":"contentScript.js"
+  }]
+}
+
