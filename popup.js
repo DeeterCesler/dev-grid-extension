@@ -1,22 +1,24 @@
-document.addEventListener('DOMContentLoaded', function() {
-var checkPageButton = document.getElementById('checkPage');
-checkPageButton.addEventListener('click', function() {
-
-chrome.tabs.getSelected(null, function(tab) {
-d = document;
-
-var f = d.createElement('form');
-f.action = 'https://gtmetrix.com/analyze.html?bm';
-f.method = 'post';
-f.target='_blank';
-var i = d.createElement('input');
-i.type = 'hidden';
-i.name = 'url';
-i.value = tab.url;
-f.appendChild(i);
-d.body.appendChild(f);
-f.submit();
-});
-}, false);
-}, false);
-
+document.addEventListener(
+  'DOMContentLoaded',
+  function () {
+    const checkPageButton = document.getElementById('toggle')
+    checkPageButton.addEventListener(
+      'click',
+      function () {
+        // toggle class of hidden grid?
+        alert(':0')
+        const grid = document.getElementById('big-grid')
+        const isShowing = grid.classList.contains('show')
+        if (isShowing) {
+          grid.setAttribute('class', 'hide')
+          alert(':1')
+        } else {
+          grid.setAttribute('class', 'show')
+          alert(':2')
+        }
+      },
+      false,
+    )
+  },
+  false,
+)

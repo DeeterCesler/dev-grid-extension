@@ -4,32 +4,50 @@ body {
   padding: 0;
 }
 
-.col-left,
-.col-right {
+.dev-col-left,
+.dev-col-right {
   width: 1px;
   background-color: rgb(255, 0, 166);
   height: 100vh;
   left: 33%;
+  bottom: 0;
 }
 
-.col-right {
+.dev-col-right {
   left: 66%;
 }
 
-.row-bottom,
-.row-top {
+.dev-row-bottom,
+.dev-row-top {
   height: 1px;
   background-color: rgb(255, 0, 166);
   width: 100vw;
   top: 33%;
 }
 
-.row-bottom {
+.dev-row-bottom {
   top: 66%;
 }
 
-.big-grid,
-.big-grid div {
-  position: fixed;
+#big-grid {
+  position: relative;
   z-index: 9999;
+}
+
+#big-grid div {
+  position: fixed;
+}
+
+button {
+  margin: 20px 5px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.show {
+  visibility: visible;
 }
