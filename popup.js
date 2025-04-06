@@ -64,132 +64,29 @@ function createAndToggleGrid() {
 
 // Add click handler when popup loads
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleButton = document.getElementById('toggle');
-    const presetButtons = document.querySelectorAll('[data-preset]');
-    const addVerticalButton = document.getElementById('add-vertical');
-    const addHorizontalButton = document.getElementById('add-horizontal');
-    const removeLastButton = document.getElementById('remove-last');
-    const positionInput = document.getElementById('position');
+    // Determine which browser API to use
+    const browserAPI = typeof chrome !== 'undefined' ? chrome : 
+                      typeof brave !== 'undefined' ? brave : 
+                      typeof browser !== 'undefined' ? browser : null;
 
-    let isGridVisible = false;
-    let currentLines = [];
+    if (!browserAPI) {
+        alert('Browser API not found!');
+        return;
+    }
 
-    // Get the current tab
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        const currentTab = tabs[0];
-        if (!currentTab) return;
-
-        // Check if grid is already visible
-        chrome.tabs.sendMessage(currentTab.id, {action: 'getState'}, function(response) {
-            if (response && response.isVisible) {
-                isGridVisible = true;
-                toggleButton.textContent = 'Hide Grid';
+    document.getElementById('toggle').addEventListener('click', function() {
+        browserAPI.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            if (!tabs[0]) {
+                alert('No active tab found');
+                return;
             }
-        });
-    });
-
-    // Toggle grid visibility
-    toggleButton.addEventListener('click', function() {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            const currentTab = tabs[0];
-            if (!currentTab) return;
-
-            isGridVisible = !isGridVisible;
-            toggleButton.textContent = isGridVisible ? 'Hide Grid' : 'Show Grid';
-
-            chrome.tabs.sendMessage(currentTab.id, {
-                action: 'toggle',
-                lines: currentLines
+            
+            browserAPI.scripting.executeScript({
+                target: {tabId: tabs[0].id},
+                function: createAndToggleGrid
+            }).catch(function(err) {
+                alert('Failed to execute script: ' + err.message);
             });
         });
     });
-
-    // Handle preset grid buttons
-    presetButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const preset = this.dataset.preset;
-            let lines = [];
-
-            switch(preset) {
-                case 'even':
-                    lines = [
-                        {type: 'vertical', position: 50},
-                        {type: 'horizontal', position: 50}
-                    ];
-                    break;
-                case 'col-3':
-                    lines = [
-                        {type: 'vertical', position: 33.33},
-                        {type: 'vertical', position: 66.66}
-                    ];
-                    break;
-                case 'col-6':
-                    lines = [
-                        {type: 'vertical', position: 16.66},
-                        {type: 'vertical', position: 33.33},
-                        {type: 'vertical', position: 50},
-                        {type: 'vertical', position: 66.66},
-                        {type: 'vertical', position: 83.33}
-                    ];
-                    break;
-                case 'col-12':
-                case 'tailwind':
-                case 'bootstrap':
-                    lines = Array.from({length: 11}, (_, i) => ({
-                        type: 'vertical',
-                        position: ((i + 1) * 100) / 12
-                    }));
-                    break;
-            }
-
-            currentLines = lines;
-            updateGrid();
-            updateActiveButton(button);
-        });
-    });
-
-    // Add custom lines
-    function addLine(type) {
-        const position = parseFloat(positionInput.value);
-        if (isNaN(position) || position < 0 || position > 100) return;
-
-        currentLines.push({
-            type: type,
-            position: position
-        });
-
-        updateGrid();
-    }
-
-    addVerticalButton.addEventListener('click', () => addLine('vertical'));
-    addHorizontalButton.addEventListener('click', () => addLine('horizontal'));
-
-    // Remove last line
-    removeLastButton.addEventListener('click', function() {
-        if (currentLines.length > 0) {
-            currentLines.pop();
-            updateGrid();
-        }
-    });
-
-    // Update grid with current lines
-    function updateGrid() {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            const currentTab = tabs[0];
-            if (!currentTab) return;
-
-            chrome.tabs.sendMessage(currentTab.id, {
-                action: 'update',
-                lines: currentLines
-            });
-        });
-    }
-
-    // Update active button state
-    function updateActiveButton(activeButton) {
-        presetButtons.forEach(button => {
-            button.classList.remove('active');
-        });
-        activeButton.classList.add('active');
-    }
 });
