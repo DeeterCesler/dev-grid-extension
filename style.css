@@ -6,22 +6,31 @@ body {
 
 .dev-col-left,
 .dev-col-right {
-  width: 1px;
-  background-color: rgb(255, 0, 166);
+  width: 2px;
+  background-color: rgba(255, 0, 166, 0.8);
   height: 100vh;
+  position: fixed;
+  top: 0;
+}
+
+.dev-col-left {
   left: 33%;
-  bottom: 0;
 }
 
 .dev-col-right {
   left: 66%;
 }
 
-.dev-row-bottom,
-.dev-row-top {
-  height: 1px;
-  background-color: rgb(255, 0, 166);
+.dev-row-top,
+.dev-row-bottom {
+  height: 2px;
+  background-color: rgba(255, 0, 166, 0.8);
   width: 100vw;
+  position: fixed;
+  left: 0;
+}
+
+.dev-row-top {
   top: 33%;
 }
 
@@ -29,25 +38,86 @@ body {
   top: 66%;
 }
 
-#big-grid {
-  position: relative;
+#grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   z-index: 9999;
+  display: none;
 }
 
-#big-grid div {
-  position: fixed;
+.grid-line {
+  position: absolute;
+  background-color: rgba(255, 0, 166, 0.8);
+}
+
+.grid-line.vertical {
+  width: 2px;
+  height: 100%;
+  top: 0;
+}
+
+.grid-line.horizontal {
+  height: 2px;
+  width: 100%;
+  left: 0;
+}
+
+#grid-overlay.show {
+  display: block;
 }
 
 button {
   margin: 20px 5px;
   padding: 10px;
   border-radius: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+button:active {
+  background-color: #3e8e41;
+  transform: scale(0.95);
+}
+
+@keyframes spark {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #ffeb3b;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: spark 0.5s ease-out forwards;
 }
 
 .hide {
-  visibility: hidden;
+  display: none;
 }
 
 .show {
-  visibility: visible;
+  display: block;
 }
