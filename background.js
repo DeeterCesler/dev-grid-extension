@@ -31,8 +31,8 @@ brave.runtime.onInstalled.addListener(async () => {
 })
 
 // Listen for when the extension is installed or updated
-brave.runtime.onInstalled.addListener(async () => {
-    console.log('Extension installed/updated');
+chrome.runtime.onInstalled.addListener(async () => {
+    console.log('DevGrid extension installed');
 });
 
 // Listen for when a tab is updated
@@ -61,4 +61,17 @@ brave.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
             }
         });
     }
+});
+
+// Listen for when the extension icon is clicked
+chrome.action.onClicked.addListener((tab) => {
+    console.log('Extension icon clicked, injecting content script');
+    chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content.js']
+    }).then(() => {
+        console.log('Content script injected successfully');
+    }).catch(error => {
+        console.error('Error injecting content script:', error);
+    });
 });

@@ -3,25 +3,133 @@
 <head>
     <style>
         body {
-            width: 200px;
-            padding: 10px;
+            width: 300px;
+            padding: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .section {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
         }
         button {
             width: 100%;
-            padding: 10px;
-            background: #4CAF50;
-            color: white;
-            border: none;
+            padding: 8px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
         }
         button:hover {
-            background: #45a049;
+            background: #e9e9e9;
+        }
+        button.active {
+            background: #fff;
+            border-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+        .custom-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .add-line {
+            background: #2196F3;
+            color: white;
+            border: none;
+        }
+        .add-line:hover {
+            background: #1976D2;
+        }
+        .remove-line {
+            background: #f44336;
+            color: white;
+            border: none;
+        }
+        .remove-line:hover {
+            background: #d32f2f;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toggle-container button {
+            flex: 1;
         }
     </style>
 </head>
 <body>
-    <button id="toggle">Toggle Grid</button>
+    <div class="section">
+        <h3>Preset Grids</h3>
+        <div class="preset-grid">
+            <button data-preset="even">Even (2x2)</button>
+            <button data-preset="col-3">3 Columns</button>
+            <button data-preset="col-6">6 Columns</button>
+            <button data-preset="col-12">12 Columns</button>
+            <button data-preset="tailwind">Tailwind (12)</button>
+            <button data-preset="bootstrap">Bootstrap (12)</button>
+            <button data-preset="golden">Golden Ratio</button>
+            <button data-preset="rule-of-thirds">Rule of Thirds</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Custom Lines</h3>
+        <div class="slider-container">
+            <label for="line-position">Line Position: <span id="position-value">50</span>%</label>
+            <input type="range" id="line-position" min="0" max="100" value="50" step="1">
+        </div>
+        <div class="custom-controls">
+            <button class="add-line" id="add-vertical">Add Vertical</button>
+            <button class="add-line" id="add-horizontal">Add Horizontal</button>
+        </div>
+        <button class="remove-line" id="remove-last">Remove Last Line</button>
+    </div>
+
+    <div class="section">
+        <div class="toggle-container">
+            <button id="toggle">Toggle Grid</button>
+        </div>
+    </div>
+
     <script src="popup.js"></script>
 </body>
 </html>
