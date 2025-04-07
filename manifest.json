@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DevGrid",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A grid overlay to assist web design",
   "action": {
     "default_icon": "hash.png",
