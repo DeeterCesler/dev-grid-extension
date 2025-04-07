@@ -1,14 +1,10 @@
-console.log('Content script loaded');
-
 let gridContainer = null;
 let isVisible = false;
 let currentLines = [];
 
 // Create grid container
 function createGridContainer() {
-    console.log('Creating grid container');
     if (gridContainer) {
-        console.log('Grid container already exists');
         return;
     }
 
@@ -27,7 +23,6 @@ function createGridContainer() {
             background: transparent;
         `;
         document.body.appendChild(gridContainer);
-        console.log('Grid container created and appended');
     } catch (error) {
         console.error('Error creating grid container:', error);
     }
@@ -35,7 +30,6 @@ function createGridContainer() {
 
 // Create a grid line
 function createLine(type, position) {
-    console.log(`Creating ${type} line at ${position}%`);
     const line = document.createElement('div');
     line.className = 'dev-grid-line';
     
@@ -68,10 +62,8 @@ function createLine(type, position) {
 
 // Update grid lines
 function updateGridLines(lines) {
-    console.log('DEBUG: UpdateGridLines called with:', lines);
     try {
         if (!gridContainer) {
-            console.log('DEBUG: Creating new grid container');
             createGridContainer();
         }
         
@@ -85,7 +77,6 @@ function updateGridLines(lines) {
             if (typeof line.position === 'number' && line.position >= 0 && line.position <= 100) {
                 const newLine = createLine(line.type, line.position);
                 gridContainer.appendChild(newLine);
-                console.log(`DEBUG: Added ${line.type} line at ${line.position}%`);
             }
         });
 
@@ -99,10 +90,8 @@ function updateGridLines(lines) {
 
 // Toggle grid visibility
 function toggleGrid(show, lines) {
-    console.log(`Toggling grid visibility: ${show ? 'show' : 'hide'}`);
     try {
         if (!gridContainer) {
-            console.log('No grid container, creating one');
             createGridContainer();
         }
         
@@ -112,7 +101,6 @@ function toggleGrid(show, lines) {
 
         gridContainer.style.display = show ? 'block' : 'none';
         isVisible = show;
-        console.log(`Grid visibility set to: ${show ? 'visible' : 'hidden'}`);
     } catch (error) {
         console.error('Error toggling grid:', error);
     }
@@ -120,10 +108,8 @@ function toggleGrid(show, lines) {
 
 // Initialize grid
 function initializeGrid() {
-    console.log('Initializing grid');
     try {
         createGridContainer();
-        console.log('Grid initialized');
     } catch (error) {
         console.error('Error initializing grid:', error);
     }
@@ -138,10 +124,8 @@ if (document.readyState === 'loading') {
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log('DEBUG: Content script received message:', request);
     try {
         if (request.action === 'update') {
-            console.log('DEBUG: Updating grid lines with:', request.lines);
             updateGridLines(request.lines);
             sendResponse({isVisible: true});
         }
@@ -149,4 +133,4 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         console.error('DEBUG: Error in content script:', error);
     }
     return true;
-}); 
+});

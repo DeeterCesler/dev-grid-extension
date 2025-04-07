@@ -69,7 +69,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 // Listen for when the extension icon is clicked
 chrome.action.onClicked.addListener((tab) => {
-    console.log('Extension icon clicked, injecting content script');
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: ['content.js']

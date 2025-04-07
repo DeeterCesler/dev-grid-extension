@@ -64,7 +64,6 @@ function createAndToggleGrid() {
 
 // Add click handler when popup loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Popup loaded');
     const toggleButton = document.getElementById('toggle');
     const clearButton = document.getElementById('clear');
     const presetButtons = document.querySelectorAll('[data-preset]');
@@ -73,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const removeLastButton = document.getElementById('remove-last');
     const linePositionSlider = document.getElementById('line-position');
     const positionValue = document.getElementById('position-value');
+    // TODO: maybe add this back later
     // const lineThicknessSlider = document.getElementById('line-thickness');
     const thicknessValue = document.getElementById('thickness-value');
     const lineControls = document.getElementById('line-controls');
@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             chrome.tabs.sendMessage(currentTab.id, {action: 'getState'}, function(response) {
-                console.log('Grid visibility check:', response);
                 if (response) {
                     isGridVisible = response.isVisible;
                     updateToggleButton();
@@ -139,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.get(['gridState', 'customPresets'], function(result) {
         if (result.gridState) {
             currentLines = result.gridState.lines || [];
-            console.log('Loaded currentLines:', currentLines);
             if (currentLines.length > 0) {
                 lineControls.classList.add('visible');
                 // Always set selectedLineIndex to the last line when loading state
@@ -166,17 +164,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load custom presets
     function loadCustomPresets(presets) {
-      console.log('presets');
         customPresetsContainer.innerHTML = '';
         if (Object.keys(presets).length === 0) {
-          console.log('no presets');
             customPresetsSection.style.display = 'none';
             return;
         }
         customPresetsSection.style.display = 'block';
 
         Object.entries(presets).forEach(([name, preset]) => {
-          console.log('preset: ', preset);
             const button = document.createElement('button');
             button.textContent = name;
             button.className = 'custom-preset';
@@ -233,19 +228,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update position value display
     linePositionSlider.addEventListener('input', function() {
-        console.log('DEBUG: Slider moved to:', this.value);
         positionValue.textContent = this.value;
         if (selectedLineIndex >= 0 && currentLines[selectedLineIndex]) {
-            console.log('DEBUG: Updating line at index:', selectedLineIndex);
             currentLines[selectedLineIndex].position = parseFloat(this.value);
-            console.log('DEBUG: Line position updated to:', currentLines[selectedLineIndex]);
             updateGrid();
             saveState();
-        } else {
-            console.log('DEBUG: No line selected or invalid index:', selectedLineIndex);
         }
     });
 
+    // TODO: maybe add this later
     // Update thickness value display
     // lineThicknessSlider.addEventListener('input', function() {
     //     thicknessValue.textContent = this.value;
@@ -262,9 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        console.log('Querying tab state:', currentTab.id);
         chrome.tabs.sendMessage(currentTab.id, {action: 'getState'}, function(response) {
-            console.log('Tab state response:', response);
             if (response && response.isVisible) {
                 isGridVisible = true;
                 toggleButton.textContent = 'Hide Grid';
@@ -285,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Toggle grid visibility
     toggleButton.addEventListener('click', function() {
-        console.log('Toggle button clicked');
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             const currentTab = tabs[0];
             if (!currentTab) {
@@ -296,13 +284,11 @@ document.addEventListener('DOMContentLoaded', function() {
             isGridVisible = !isGridVisible;
             updateToggleButton();
 
-            console.log('Sending toggle message:', {action: 'toggle', lines: currentLines, thickness: lineThickness});
             chrome.tabs.sendMessage(currentTab.id, {
                 action: 'toggle',
                 lines: currentLines,
                 // thickness: lineThickness
             }, function(response) {
-                console.log('Toggle response:', response);
             });
         });
     });
@@ -310,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle preset grid buttons
     presetButtons.forEach(button => {
         button.addEventListener('click', function() {
-            console.log('Preset button clicked:', this.dataset.preset);
             const preset = this.dataset.preset;
             let lines = [];
 
@@ -419,7 +404,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add custom lines
     function addLine(type) {
-        console.log(`Adding ${type} line`);
         const position = parseFloat(linePositionSlider.value);
         if (isNaN(position) || position < 0 || position > 100) {
             console.error('Invalid position:', position);
@@ -451,7 +435,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Remove last line
     removeLastButton.addEventListener('click', function() {
-        console.log('Removing last line');
         if (currentLines.length > 0) {
             currentLines.pop();
             selectedLineIndex = currentLines.length - 1;
@@ -488,20 +471,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update grid with current lines
     function updateGrid() {
-        console.log('DEBUG: UpdateGrid called with lines:', currentLines);
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             const currentTab = tabs[0];
             if (!currentTab) {
-                console.error('DEBUG: No active tab found');
                 return;
             }
 
-            console.log('DEBUG: Sending update message to tab:', currentTab.id);
             chrome.tabs.sendMessage(currentTab.id, {
                 action: 'update',
                 lines: currentLines
             }, function(response) {
-                console.log('DEBUG: Got response from content script:', response);
                 if (response) {
                     isGridVisible = response.isVisible;
                     updateToggleButton();
