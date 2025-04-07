@@ -139,14 +139,16 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.get(['gridState', 'customPresets'], function(result) {
         if (result.gridState) {
             currentLines = result.gridState.lines || [];
-            selectedLineIndex = result.gridState.selectedLineIndex || -1;
+            console.log('Loaded currentLines:', currentLines);
             if (currentLines.length > 0) {
                 lineControls.classList.add('visible');
-                if (selectedLineIndex >= 0 && currentLines[selectedLineIndex]) {
-                    linePositionSlider.value = currentLines[selectedLineIndex].position;
-                    positionValue.textContent = currentLines[selectedLineIndex].position;
-                }
+                // Always set selectedLineIndex to the last line when loading state
+                selectedLineIndex = currentLines.length - 1;  // This is the key change
+                const lastLine = currentLines[selectedLineIndex];
+                linePositionSlider.value = lastLine.position;
+                positionValue.textContent = lastLine.position;
             }
+            updateGrid();
         }
         if (result.lineThickness) {
             lineThickness = result.lineThickness;
@@ -231,11 +233,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update position value display
     linePositionSlider.addEventListener('input', function() {
+        console.log('DEBUG: Slider moved to:', this.value);
         positionValue.textContent = this.value;
         if (selectedLineIndex >= 0 && currentLines[selectedLineIndex]) {
+            console.log('DEBUG: Updating line at index:', selectedLineIndex);
             currentLines[selectedLineIndex].position = parseFloat(this.value);
+            console.log('DEBUG: Line position updated to:', currentLines[selectedLineIndex]);
             updateGrid();
             saveState();
+        } else {
+            console.log('DEBUG: No line selected or invalid index:', selectedLineIndex);
         }
     });
 
@@ -481,21 +488,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update grid with current lines
     function updateGrid() {
-        console.log('Updating grid with lines:', currentLines);
+        console.log('DEBUG: UpdateGrid called with lines:', currentLines);
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             const currentTab = tabs[0];
             if (!currentTab) {
-                console.error('No active tab found');
+                console.error('DEBUG: No active tab found');
                 return;
             }
 
-            console.log('Sending update message:', {action: 'update', lines: currentLines, thickness: lineThickness});
+            console.log('DEBUG: Sending update message to tab:', currentTab.id);
             chrome.tabs.sendMessage(currentTab.id, {
                 action: 'update',
-                lines: currentLines,
-                // thickness: lineThickness
+                lines: currentLines
             }, function(response) {
-                console.log('Update response:', response);
+                console.log('DEBUG: Got response from content script:', response);
                 if (response) {
                     isGridVisible = response.isVisible;
                     updateToggleButton();
@@ -510,5 +516,12 @@ document.addEventListener('DOMContentLoaded', function() {
             button.classList.remove('active');
         });
         activeButton.classList.add('active');
+    }
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === 'update') {
+        updateGridLines(request.lines); // Ensure this function is called
+        sendResponse({isVisible: true}); // Respond with the visibility state
     }
 });

@@ -68,10 +68,10 @@ function createLine(type, position) {
 
 // Update grid lines
 function updateGridLines(lines) {
-    console.log('Updating grid lines:', lines);
+    console.log('DEBUG: UpdateGridLines called with:', lines);
     try {
         if (!gridContainer) {
-            console.log('No grid container, creating one');
+            console.log('DEBUG: Creating new grid container');
             createGridContainer();
         }
         
@@ -85,18 +85,15 @@ function updateGridLines(lines) {
             if (typeof line.position === 'number' && line.position >= 0 && line.position <= 100) {
                 const newLine = createLine(line.type, line.position);
                 gridContainer.appendChild(newLine);
-                console.log(`Added ${line.type} line at ${line.position}%`);
+                console.log(`DEBUG: Added ${line.type} line at ${line.position}%`);
             }
         });
 
         currentLines = lines;
-        console.log('Grid lines updated successfully');
-        
-        // Make sure the grid is visible
         gridContainer.style.display = 'block';
         isVisible = true;
     } catch (error) {
-        console.error('Error updating grid lines:', error);
+        console.error('DEBUG: Error updating grid lines:', error);
     }
 }
 
@@ -141,21 +138,15 @@ if (document.readyState === 'loading') {
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log('Received message:', request);
+    console.log('DEBUG: Content script received message:', request);
     try {
-        switch(request.action) {
-            case 'toggle':
-                toggleGrid(!isVisible, request.lines);
-                break;
-            case 'update':
-                updateGridLines(request.lines);
-                break;
-            case 'getState':
-                sendResponse({isVisible});
-                break;
+        if (request.action === 'update') {
+            console.log('DEBUG: Updating grid lines with:', request.lines);
+            updateGridLines(request.lines);
+            sendResponse({isVisible: true});
         }
     } catch (error) {
-        console.error('Error handling message:', error);
+        console.error('DEBUG: Error in content script:', error);
     }
     return true;
 }); 
